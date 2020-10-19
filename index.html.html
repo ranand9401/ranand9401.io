@@ -1,0 +1,476 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Dating Website</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	< 
+
+  	<!-- Facebook and Twitter integration -->
+	<meta property="og:title" content=""/>
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content=""/>
+	<meta property="og:site_name" content=""/>
+	<meta property="og:description" content=""/>
+	<meta name="twitter:title" content="" />
+	<meta name="twitter:image" content="" />
+	<meta name="twitter:url" content="" />
+	<meta name="twitter:card" content="" />
+
+	<!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet"> -->
+	<!-- <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i" rel="stylesheet"> -->
+	<link rel="shortcut icon" href="images/logo2.png">
+	<!--fa fa fonts -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="css/icomoon.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="css/flexslider.css">
+
+	<!-- Owl Carousel  -->
+	<link rel="stylesheet" href="css/owl.carousel.min.css">
+	<link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="css/style.css">
+
+	<!-- Modernizr JS -->
+	<script src="js/modernizr-2.6.2.min.js"></script>
+	<!-- FOR IE9 below -->
+	<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+   
+
+    ///////////////////////////////////////////////
+    //What is the Time Horizon to Replenish Fund?//
+    ///////////////////////////////////////////////
+     function finance(pledgerate, forever, paybackpd){
+        var principalc = 750000;
+        var principali = 5000;
+        var monthlysharedincome = 0.012;
+        var avgstartsal = 50600; //average starting salary
+        var nommonsal = 0.0031; //nominal monthly salary increase
+        var nommoninfl = 0.0017; //Nominal monthly inflation rate
+        //var pledgerate = 0.55;
+        //var forever = 0.15;
+        //var paybackpd = 120;
+        var b=0; //Months Out
+        var c=0; //Yearly Salary
+        var d=0; //Monthly Salary
+        var e=0; //Total Monthly Payment Per Individual
+        var f=0; //Interest (inflation) Portion
+        var g=0; //Individual Oustanding Amount
+        var h=principali; //Principal Portion
+        var i=principalc; //Individual Outstanding Principal Principal Amount
+        var total = 0;
+        var fulltable = [];
+        var text = "";
+        var x;
+        for (x = 0; x < 10000; x++) {
+            b = x;
+            if (x == 0) {
+              b = 0;  // Months Out
+              c = 0;  // Yearly Salary
+              d = 0;  // Monthly Salary
+              e = 0;  // Total Monthly Payment Per Individual
+              f = 0;  // Interest (inflation) Portion
+              g = 0;  // Individual Oustanding Amount
+              h = principali;  // Principal Portion
+              i = principalc;  // Individual Outstanding Principal Principal Amount
+            } else if (x > 0 && x <= paybackpd) {
+              b = x;
+              if (x == 1){
+                  c = avgstartsal;
+              }
+              else {
+                  c = c*(1+nommonsal);
+              }
+              d = c/12;
+              f = nommoninfl*h;
+              g = monthlysharedincome*d;
+              e = f + g;
+              h = h - g;
+              i = i + (i*nommoninfl) - (e*150*pledgerate);
+            } else if (x > paybackpd) {
+              b = x;
+              if (x == 1) {
+                  c = avgstartsal;
+              }
+              else {
+                  c = c * (1 + nommonsal)
+              }
+              d = c / 12;
+              f = nommoninfl * h;
+              g = monthlysharedincome * d;
+              e = f + g;
+              h = h - g;
+              i = i + (i * nommoninfl) - (e * 150 * forever);
+              if (i < 0) {
+                  total = b + 1;
+                  break;
+              }
+            }
+            fulltable.push([b,c,d,e,f,g,h,i]);
+        }
+        return total
+      }
+    function drawChart() {
+        var z;
+        var x = document.getElementById("liferate").value;
+	var arr1 = [["% of Paid ","Years until profit "]];
+        for (z = 0; z <= 100; z++) {
+        arr1.push([z, finance(z/100,x/100,120)/12])
+        }
+        //Slider  Value
+        document.getElementById("demo").innerHTML = x;
+        var data = google.visualization.arrayToDataTable(arr1);
+        var options = {
+        title: 'No of Paid users on the Length of membership',
+        titlePosition: 'center',
+        curveType: 'function',
+        legend: { position: 'none' },
+        vAxes: {
+        // Adds titles to each axis.
+        0: {title: 'profit',
+            viewWindow: {
+                min: 0,
+                max: 100
+            }
+        }
+        },
+        hAxes: {
+        // Adds titles to each axis.
+        0: {title: '% of Active users',
+        viewWindow: {
+            min: x,
+            max: 100
+             }
+        }
+        },
+         lineWidth: 3
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        chart.draw(data, options);
+    }
+    ////////////////////////////
+    //Individual to Pay Back?//
+    ///////////////////////////
+    google.charts.load('current', {'packages':['bar']});
+    google.charts.setOnLoadCallback(drawChart1);
+    function drawChart1() {
+    var interest = document.getElementById("interest").value;
+    var amount = document.getElementById("amount").value;
+    var period = document.getElementById("period").value;
+    var intper = interest/1200;
+    var permonths = period*12;
+    var total = amount*permonths*intper*Math.pow((1+intper),permonths)*(1/(Math.pow((1+intper),permonths)-1))
+    //*((1+intper)^permonths)*(1/(((1+intper)^permonths)-1)))
+    var intpaid = (total-amount);
+    var pledgeint = 0;
+    var amountnew = parseInt(amount);
+    var intpaidnew = parseInt(intpaid);
+    var data = google.visualization.arrayToDataTable([
+      ['Type', 'Amount', 'Interest'],
+      ['Loan', amountnew, intpaidnew],
+      ['Pledge', amountnew, pledgeint]
+     ]);
+    var options = {
+      chart: {
+        title: 'Pledge Comparison with Traditional Loans'
+      },
+      bars: 'vertical',
+      vAxis: {format: 'decimal'},
+      height: 400,
+      isStacked: true,
+      colors: ['#002060', '#c6a876', '#c6a876']
+    };
+    var chart = new google.charts.Bar(document.getElementById('chart_div'));
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+    document.getElementById("demo1").innerHTML = interest;
+    document.getElementById("mon").innerHTML = amount;
+    document.getElementById("per").innerHTML = period;
+    var btns = document.getElementById('btn-group');
+    btns.onclick = function (e) {
+      if (e.target.tagName === 'BUTTON') {
+        options.vAxis.format = e.target.id === 'none' ? '' : e.target.id;
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    }
+    }
+
+    //////////////////////////////
+    //Modeling Total Fund Amount//
+    //////////////////////////////
+
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart2);
+
+      function finance2(startingusers, paidusers, subcost, advrevenuse, webhostingcost, miscexpense, usergrowth) {
+
+      	//var incohortsz = 100;
+        var firstyearalumnicontribution = 0;
+        var univfundpost3yr = "No"; 
+		var perincrease = usergrowth/100;
+		
+		
+		
+        var totalnetincome = 0;
+		var monthlyincome = 0;
+		var monthlyexpense = 0; //average starting salary
+		var paidsubscription = 50; 
+		var sponsorrev = 5;  
+		
+		
+        
+        var infl = "No";
+        //var maxpopsz = 5000;
+        var netbal = 0;
+		var fulltable = [["test","Current Profit Model"]];       
+
+        for (z = 0; z < 5; z++) {
+           var newpaidusers = paidusers + (Math.ceil(z * (usergrowth * paidusers) /100));
+		   paidincome = (newpaidusers  *  paidsubscription) ;  
+		   
+		   sponsorincome = (startingusers + ( Math.ceil(z * (usergrowth * startingusers)/ 100))) * sponsorrev;    
+		   monthlyincome = (paidincome + advrevenuse ) - (webhostingcost + miscexpense); 
+		   fulltable.push([z, monthlyincome* 12]); 
+		   
+        }
+
+
+        
+       
+        return fulltable; 
+        }
+
+    function drawChart2() {
+        var z;
+        var x1 = document.getElementById("startusers").value;
+        var x2 = document.getElementById("paidusers").value;
+        var x3 = document.getElementById("subcost").value;
+        var x4 = document.getElementById("advrevenue").value;
+        var x5 = document.getElementById("webhostingcost").value;
+        var x6 = document.getElementById("miscexpense").value;
+        var x7 = document.getElementById("usergrowth").value;
+        
+
+        var arr1 = finance2(x1,x2,x3,x4,x5,x6,x7);
+
+        //var arr1 = finance2(x1,x2,x3,x4/100,x5/100,x6/100,x7,x8,x9);
+        //var arr1 = [["% of Cohort Pledging","Years until Fund Replenished"], [1,2],[2,3],[3,4],[1,2]];
+        //Slider  Value
+        document.getElementById("demo3").innerHTML = x1;
+        document.getElementById("demo4").innerHTML = x2;
+        document.getElementById("demo5").innerHTML = x3;
+        document.getElementById("demo6").innerHTML = x4;
+        document.getElementById("demo7").innerHTML = x5;
+        document.getElementById("demo8").innerHTML = x6;
+        document.getElementById("demo9").innerHTML = x7;
+       
+
+        var data = google.visualization.arrayToDataTable(arr1);
+        var data2 = google.visualization.arrayToDataTable(arr1);
+        var options = {
+        title: 'Website Sustainability 5 Year',
+        titlePosition: 'center',
+        curveType: 'function',
+        legend: { position: 'none' },
+        vAxes: {
+        // Adds titles to each axis.
+        0: {title: 'Profitability ($)',
+
+        }
+        },
+        hAxes: {
+        // Adds titles to each axis.
+		
+        0: {title: 'Years', 
+
+        }
+	
+        },
+         lineWidth: 3
+        };
+         var chart = new google.visualization.LineChart(document.getElementById('curve_chart3'));  
+		 
+        chart.draw(data, options);
+	
+	
+    }
+
+    </script>
+
+	</head>
+	<body>
+
+	<div class="fh5co-loader"></div>
+
+	<div id="page">
+	<nav class="fh5co-nav" role="navigation">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-xs-2">
+					<a href="index.html"><img  width="110" id="fh5co-logo" src="images/full_logo.png"></a>
+				</div>
+				<div class="col-md-6 col-xs-6 text-center menu-1">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="about.html">About</a></li>
+						<li><a href="cpn.html">Community Pledge Networks</a></li>
+						<li><a href="services.html">Services</a></li>
+						<li><a href="contact.html">Contact</a></li>
+					</ul>
+				</div>
+
+			</div>
+
+		</div>
+	</nav>
+	<header id="fh5co-header" class="fh5co-cover fh5co-cover-sm" role="banner" style="background-image:url(images/quad.jpg);">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2 text-center">
+					<div class="display-t">
+						<div class="display-tc animate-box" data-animate-effect="fadeIn">
+							<h1>Financial Models</h1>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	
+			<div class="container">
+			<div class="row animate-box">
+				<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+					<h2>What Cost models of the Website?</h2>
+				</div>
+			</div>
+			<div class="about-content">
+				<div class="row">
+					
+					    <div class="small-6 columnnew">
+						    <p style="color:#002060"><strong>Starting User</strong></p>
+					      <input type="range" min="0" max="500000" value="150" step="5" class="slider" id="startusers" onchange="drawChart2()">
+					      <p>Value: <span id="demo3"></span>Starting Users</p>
+                        </div>
+    					<div class ="small-6 columnnew">
+    						<p style="color:#002060"><strong>Paid Users per month</strong></p>
+    					      <input type="range" min="0" max="10000" value="50" step="5" class="slider" id="paidusers" onchange="drawChart2()">
+    					      <p>Value: <span id="demo4"></span> Dollars</p>
+    					</div>
+				
+					    <div class="small-6 columnnew">
+
+						    <p style="color:#002060"><strong>Subscription cost Per Month</strong></p>
+ 					      <input type="range" min="0" max="500" value="50" step="1" class="slider" id="subcost" onchange="drawChart2()">
+					      <p>Value: <span id="demo5"></span> Dollars Per Month</p>
+						</div> 
+						
+						<div class="small-6 columnnew">
+                           <p style="color:#002060"><strong>Advertising/ Sponsor revenue per user per month</strong></p>
+					      <input type="range" min="1" max="100" value="10" class="slider" id="advrevenue" onchange="drawChart2()">
+					      <p>Value: <span id="demo6"></span> % of Cohort</p>
+						</div>	  				  					 
+										
+				
+					    <div class="small-6 columnnew">
+                           <p style="color:#002060"><strong>Web hosting/maintenance costs per user per month</strong></p>
+					      <input type="range" min="1" max="10000" value="1000" class="slider" id="webhostingcost" onchange="drawChart2()">
+					      <p>Value: <span id="demo7"></span> % in Cohort</p>
+						</div>
+					
+  						<div class="small-6 columnnew">
+						<p style="color:#002060"><strong>Misc expenses per month</strong></p>
+					      <input type="range" min="0" max="5000" value="100" class="slider" id="miscexpense" onchange="drawChart2()">
+					      <p>Value: <span id="demo8"></span> % Growth</p>
+						</div>
+				
+					    <div class="small-6 columnnew">
+						    <p style="color:#002060"><strong>User growth rate per year</strong></p>
+					      <input type="range" min="0" max="100" value="30" step="5000" class="slider" id="usergrowth" onchange="drawChart2()">
+					      <p>Value: <span id="demo9"></span> Dollars</p>
+					    </div>
+						
+						
+					</div>	
+			</div>
+	<div class="center" id="curve_chart3"></div>
+	<div class="center2" id="curve_chart4"></div>	 
+		</div>
+
+	<div id="fh5co-started">
+		<div class="container">
+			<div class="row animate-box">
+				<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+					<h2>Interested in Learning more?</h2>
+					<p>Feel free to contact us to learn more about our services.</p>
+				</div>
+			</div>
+			<div class="row animate-box">
+				<div align="center">
+						<a href="contact.html" class="btn btn-primary btn-outline btn-lg">Learn More</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<footer id="fh5co-footer" role="contentinfo">
+		<div class="container">
+
+			<div class="row copyright">
+				<div class="col-md-12 text-center">
+					<p>
+						<small class="block">&copy; Dating Website. All Rights Reserved.</small>
+					</p>
+					<p>
+						<ul class="fh5co-social-icons">
+							<li><a href="https://twitter.com/AltianEducation" target="_blank"><i class="icon-twitter"></i></a></li>
+							<li><a href="https://www.facebook.com/Altian-Education-141246769924078/?modal=admin_todo_tour" target="_blank"><i class="icon-facebook"></i></a></li>
+							<li><a href="https://www.linkedin.com/company/altian-education/" target="_blank"><i class="icon-linkedin"></i></a></li>
+						</ul>
+					</p>
+				</div>
+			</div>
+
+		</div>
+	</footer>
+	</div>
+
+	<div class="gototop js-top">
+		<a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+	</div>
+
+	<!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Carousel -->
+	<script src="js/owl.carousel.min.js"></script>
+	<!-- countTo -->
+	<script src="js/jquery.countTo.js"></script>
+	<!-- Flexslider -->
+	<script src="js/jquery.flexslider-min.js"></script>
+	<!-- Main -->
+	<script src="js/main.js"></script>
+
+	</body>
+</html>
